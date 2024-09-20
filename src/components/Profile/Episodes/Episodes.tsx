@@ -7,6 +7,7 @@ export default function Episodes({ episodeData }: { episodeData: Episode[] }) {
       <Typography
         variant="h5"
         sx={{ margin: "20px 0 10px", borderBottom: "1px solid #9d9d9d" }}
+        data-testid="episodes_title"
       >
         Episodes
       </Typography>
@@ -20,6 +21,7 @@ export default function Episodes({ episodeData }: { episodeData: Episode[] }) {
           width: { xs: "100%", sm: "552px" },
           flexWrap: "wrap",
         }}
+        data-testid="episodes"
       >
         <List
           sx={{
@@ -29,8 +31,14 @@ export default function Episodes({ episodeData }: { episodeData: Episode[] }) {
         >
           {episodeData.map((episode) => {
             return (
-              <ListItem key={episode.name} sx={{ padding: "5px 0 5px 10px" }}>
-                <ListItemText sx={{ display: "list-item", margin: 0 }}>
+              <ListItem
+                key={episode.id}
+                sx={{ padding: "5px 0 5px 10px" }}
+              >
+                <ListItemText
+                  sx={{ display: "list-item", margin: 0 }}
+                  data-testid="episode"
+                >
                   {episode.name} / {episode.episode} / {episode.airDate}
                 </ListItemText>
               </ListItem>

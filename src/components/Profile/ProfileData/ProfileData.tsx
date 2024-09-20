@@ -50,6 +50,7 @@ const DataRow = ({
         alignItems: "stretch",
         width: "100%",
       }}
+      data-testid="profile_data_row"
     >
       {field && <DataCell type={DataCellType.META}>{field}</DataCell>}
       {value && <DataCell>{value}</DataCell>}
@@ -58,7 +59,11 @@ const DataRow = ({
 };
 
 const Avatar = ({ profileData }: { profileData: Character[] }) => {
-  return <Box sx={{ marginBottom: "5px" }}>{profileData[0]["image"]}</Box>;
+  return (
+    <Box sx={{ marginBottom: "5px" }} data-testid="avatar">
+      {profileData[0]["image"]}
+    </Box>
+  );
 };
 
 export default function ProfileData({
@@ -78,6 +83,7 @@ export default function ProfileData({
         width: { xs: "100%", sm: "552px" },
         flexWrap: "wrap",
       }}
+      data-testid="profile"
     >
       <Avatar profileData={profileData} />
 

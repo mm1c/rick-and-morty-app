@@ -22,6 +22,9 @@ export default function SearchBar({
         label="search names"
         variant="standard"
         onChange={handleSearch}
+        slotProps={{
+          htmlInput: { "data-testid": "name_search" },
+        }}
       />
     </Container>
   );
