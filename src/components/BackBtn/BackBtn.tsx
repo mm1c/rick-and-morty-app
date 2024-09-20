@@ -20,6 +20,7 @@ export default function BackBtn() {
         variant="contained"
         startIcon={<HomeIcon />}
         onClick={() => navigate(-1)}
+        data-testid="back_btn"
       >
         back
       </Button>
