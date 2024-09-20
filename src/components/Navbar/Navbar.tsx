@@ -20,7 +20,7 @@ import { config } from "../../config";
 
 const StyledNavLink = styled(NavLink)({
   "&.active": {
-    color: "#edff00",
+    color: "#272727",
   },
 });
 
