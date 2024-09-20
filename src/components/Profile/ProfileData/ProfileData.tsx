@@ -20,6 +20,7 @@ const DataCell = ({
         flex: 1,
         display: "flex",
         justifyContent: "center",
+        alignItems: "center",
         marginTop: "1px",
         marginBottom: "1px",
         padding: "5px 10px",
@@ -46,7 +47,7 @@ const DataRow = ({
       sx={{
         flexDirection: "row",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "stretch",
         width: "100%",
       }}
     >

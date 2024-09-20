@@ -15,6 +15,8 @@ import { useParallelQueries } from "../../hooks/useParallelQueries";
 import { ApiPageResponse } from "../../models/ApiPageResponse";
 
 const SEARCH_PARAM_KEY = "s";
+const MIN_SEARCH_TERM_LENGTH = 3;
+const ITEMS_PER_PAGE = 20;
 
 const tableHeader: DataMeta[] = [
   { key: "image", value: "" },
@@ -68,6 +70,22 @@ export default function Home() {
         );
   }, [isAnyPageQueryLoading, pageQueries]);
 
+  const filteredData = useMemo(
+    () =>
+      tableData.filter((item) => {
+        if (
+          !delayedSearchTerm ||
+          delayedSearchTerm.length < MIN_SEARCH_TERM_LENGTH
+        )
+          return true;
+
+        return item["name"]
+          .toLowerCase()
+          .includes(delayedSearchTerm.toLowerCase());
+      }),
+    [tableData, delayedSearchTerm]
+  );
+
   const handleSearch = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -79,12 +97,12 @@ export default function Home() {
     () => (
       <CustomTable
         header={tableHeader}
-        data={tableData}
-        nameFilter={delayedSearchTerm}
+        data={filteredData}
         onRowClick={(id) => navigate(dynamicPaths.profile(id))}
+        itemsPerPage={ITEMS_PER_PAGE}
       />
     ),
-    [delayedSearchTerm, navigate, tableData]
+    [navigate, filteredData]
   );
 
   return (
