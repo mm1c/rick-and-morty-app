@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useDebounce } from "@uidotdev/usehooks";
 import { useQuery } from "@tanstack/react-query";
 import { CustomTable } from "../CustomTable/CustomTable/CustomTable";
 import { DataMeta } from "../../models/DataMeta";
@@ -13,6 +12,7 @@ import { Character } from "../../models/Character";
 import Spinner from "../Spinner/Spinner";
 import { useParallelQueries } from "../../hooks/useParallelQueries";
 import { ApiPageResponse } from "../../models/ApiPageResponse";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const SEARCH_PARAM_KEY = "s";
 const MIN_SEARCH_TERM_LENGTH = 3;
