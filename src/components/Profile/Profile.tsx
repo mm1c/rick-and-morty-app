@@ -1,43 +1,89 @@
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { paths } from "../../routes";
+import { Box } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import BackBtn from "../BackBtn/BackBtn";
-import characterData from "../../data/characters/2";
-import { CustomTable } from "../CustomTable/CustomTable/CustomTable";
-import { Header } from "../../models/Header";
-import { mapApiDataToTable } from "../../utils/mappers";
-import { Character } from "../../models/Character";
-import { CharacterResponse } from "../../models/CharacterResponse";
+import { DataMeta } from "../../models/DataMeta";
+import { mapApiDataToTable, mapApiEpisodeData } from "../../utils/mappers";
+import ProfileData from "./ProfileData/ProfileData";
+import Episodes from "./Episodes/Episodes";
+import { fetchEpisodeData, fetchProfilePageData } from "../../utils/requests";
+import { EpisodeResponse } from "../../models/EpisodeResponse";
+import Spinner from "../Spinner/Spinner";
+import { useParallelQueries } from "../../hooks/useParallelQueries";
 
-const MOCK_DATA = [characterData];
-
-const tableData = mapApiDataToTable<CharacterResponse, Character>(MOCK_DATA);
-
-const header: Header[] = [
-  { key: "image", value: "", property: "image" },
-  { key: "name", value: "Name", property: "name" },
-  { key: "species", value: "Species", property: "species" },
-  { key: "status", value: "Status", property: "status" },
-  { key: "gender", value: "Gender", property: "gender" },
-  { key: "origin", value: "Origin", property: "origin.name" },
-  { key: "location", value: "Location", property: "location.name" },
+const profileMeta: DataMeta[] = [
+  { key: "name", value: "Name" },
+  { key: "species", value: "Species" },
+  { key: "status", value: "Status" },
+  { key: "gender", value: "Gender" },
+  { key: "origin", value: "Origin" },
+  { key: "location", value: "Location" },
 ];
 
 export default function Profile() {
   const params = useParams();
 
-  console.log(params?.id, MOCK_DATA);
+  const [episodeUrls, setEpisodeUrls] = useState<string[]>([]);
+
+  const { data: fetchedProfileData } = useQuery({
+    queryKey: ["character", params?.id],
+    queryFn: () => fetchProfilePageData(params?.id ? +params?.id : undefined),
+  });
+
+  useEffect(() => {
+    if (!fetchedProfileData) return;
+    setEpisodeUrls(() => fetchedProfileData.episode);
+  }, [fetchedProfileData]);
+
+  const {
+    queries: episodeQueries,
+    isAnyQueryLoading: isAnyEpisodeQueryLoading,
+  } = useParallelQueries<string, EpisodeResponse | null>(
+    "episode",
+    episodeUrls,
+    fetchEpisodeData
+  );
+
+  const episodeData = useMemo(() => {
+    return isAnyEpisodeQueryLoading
+      ? []
+      : mapApiEpisodeData(
+          episodeQueries
+            .map((query) => query.data)
+            .reduce((result, data) => {
+              if (!data) return result;
+              return [...result, data];
+            }, [] as EpisodeResponse[])
+        );
+  }, [episodeQueries, isAnyEpisodeQueryLoading]);
 
   return (
-    <>
-      <CustomTable
-        header={header}
-        data={tableData}
-        responsiveConfig={{
-          flexDirection: { xs: "column", sm: "column", md: "row" },
-          display: { xs: "none", sm: "none", md: "flex" },
-        }}
-      />
-      <BackBtn path={paths.home} />
-    </>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+        padding: "0 24px",
+      }}
+    >
+      {!fetchedProfileData ? (
+        <Spinner />
+      ) : (
+        <ProfileData
+          profileMeta={profileMeta}
+          profileData={mapApiDataToTable([fetchedProfileData])}
+        />
+      )}
+
+      {isAnyEpisodeQueryLoading ? (
+        <Spinner />
+      ) : (
+        <Episodes episodeData={episodeData} />
+      )}
+
+      <BackBtn />
+    </Box>
   );
 }

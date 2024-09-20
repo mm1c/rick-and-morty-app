@@ -1,29 +1,26 @@
-import { Stack } from "@mui/material";
+import { Divider, Stack } from "@mui/material";
 import { TableCell } from "../TableCell/TableCell";
-import { Header } from "../../../models/Header";
-import { Breakpoints } from "../../../models/Breakpoints";
+import { DataMeta } from "../../../models/DataMeta";
 
-export const TableHeader = ({
-  data,
-  responsiveConfig,
-}: {
-  data: Header[];
-  responsiveConfig?: { flexDirection: Breakpoints; display: Breakpoints };
-}) => {
+export const TableHeader = ({ data }: { data: DataMeta[] }) => {
   return (
-    <Stack
-      spacing={0}
-      sx={{
-        flexDirection: responsiveConfig?.flexDirection,
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "10px",
-        display: responsiveConfig?.display, // { xs: "none", sm: "flex" },
-      }}
-    >
-      {data.map((item) => (
-        <TableCell key={item.property}>{item.value}</TableCell>
-      ))}
-    </Stack>
+    <>
+      <Stack
+        spacing={0}
+        sx={{
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "10px",
+          display: { xs: "none", sm: "flex" },
+          fontWeight: 600,
+        }}
+      >
+        {data.map((item) => (
+          <TableCell key={item.key}>{item.value}</TableCell>
+        ))}
+      </Stack>
+      <Divider sx={{ marginBottom: "10px" }} />
+    </>
   );
 };

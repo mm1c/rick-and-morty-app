@@ -3,7 +3,7 @@ export interface CharacterBase {
   name: string;
   species: string;
   status: string;
-  image: string;
+  image: string | React.ReactNode;
   gender: string;
   episode: string[];
   url: string;

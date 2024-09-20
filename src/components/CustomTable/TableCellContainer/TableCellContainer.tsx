@@ -1,6 +1,10 @@
 import { Stack } from "@mui/material";
 
-export const TableCellContainer = ({ children }: { children: React.ReactNode }) => {
+export const TableCellContainer = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   return (
     <Stack
       spacing={0}
@@ -14,4 +18,4 @@ export const TableCellContainer = ({ children }: { children: React.ReactNode }) 
       {children}
     </Stack>
   );
-}
+};

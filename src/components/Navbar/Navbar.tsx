@@ -12,12 +12,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { getRoutes } from "../../routes";
+import { getRoutes, paths } from "../../routes";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import styled from "@emotion/styled";
-
-const appName = import.meta.env.VITE_APP_NAME;
+import { config } from "../../config";
 
 const StyledNavLink = styled(NavLink)({
   "&.active": {
@@ -38,12 +37,12 @@ export default function Navbar() {
     setMobileOpen((prevState: boolean) => !prevState);
   };
 
-  const goToRoot = () => navigate("/");
+  const goToRoot = () => navigate(paths.root);
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }} onClick={goToRoot}>
-        {appName}
+        {config.appName}
       </Typography>
       <Divider />
       <List>
@@ -54,7 +53,7 @@ export default function Navbar() {
               component={StyledNavLink}
               to={route.path}
             >
-              <ListItemText primary={route.routeName} />
+              <ListItemText primary={route.routeName?.toUpperCase()} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -79,10 +78,14 @@ export default function Navbar() {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "block" },
+              cursor: "pointer",
+            }}
             onClick={goToRoot}
           >
-            {appName}
+            {config.appName}
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {routes?.map((route) => (

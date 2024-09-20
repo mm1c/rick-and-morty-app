@@ -9,16 +9,18 @@ enum PaginationDirections {
 
 interface PaginationProps {
   pageCount: number;
+  currentPage: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const Pagination = ({ pageCount, setCurrentPage }: PaginationProps) => {
-  // const { pageCount, setCurrentPage } = props;
-
+export const Pagination = ({
+  pageCount,
+  currentPage,
+  setCurrentPage,
+}: PaginationProps) => {
   const paginate = (direction: PaginationDirections) => {
-    if (direction === PaginationDirections.PREVIOUS) {
+    if (direction === PaginationDirections.PREVIOUS)
       return setCurrentPage((page) => (page > 0 ? page - 1 : 0));
-    }
 
     setCurrentPage((page) => (page < pageCount - 1 ? page + 1 : pageCount - 1));
   };
@@ -33,18 +35,22 @@ export const Pagination = ({ pageCount, setCurrentPage }: PaginationProps) => {
         display: "flex",
       }}
     >
-      <IconButton
-        aria-label="paginate-previous"
-        onClick={() => paginate(PaginationDirections.PREVIOUS)}
-      >
-        <KeyboardDoubleArrowLeftIcon />
-      </IconButton>
-      <IconButton
-        aria-label="paginate-next"
-        onClick={() => paginate(PaginationDirections.NEXT)}
-      >
-        <KeyboardDoubleArrowRightIcon />
-      </IconButton>
+      {currentPage > 0 && (
+        <IconButton
+          aria-label="paginate-previous"
+          onClick={() => paginate(PaginationDirections.PREVIOUS)}
+        >
+          <KeyboardDoubleArrowLeftIcon />
+        </IconButton>
+      )}
+      {currentPage < pageCount - 1 && (
+        <IconButton
+          aria-label="paginate-next"
+          onClick={() => paginate(PaginationDirections.NEXT)}
+        >
+          <KeyboardDoubleArrowRightIcon />
+        </IconButton>
+      )}
     </Container>
   );
 };

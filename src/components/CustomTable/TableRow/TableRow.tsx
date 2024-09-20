@@ -2,44 +2,42 @@ import { Stack } from "@mui/material";
 import { TableCellType } from "../../../enums/TableCellType";
 import { TableCellContainer } from "../TableCellContainer/TableCellContainer";
 import { TableCell } from "../TableCell/TableCell";
-import { Header } from "../../../models/Header";
-import { Breakpoints } from "../../../models/Breakpoints";
+import { DataMeta } from "../../../models/DataMeta";
 
 interface TableRowProps<DataType> {
-  header: Header[];
+  header: DataMeta[];
   data: DataType;
   onRowClick: (id: number) => void;
-  responsiveConfig: { flexDirection: Breakpoints; display: Breakpoints };
 }
 
 export const TableRow = <DataType,>({
   header,
   data,
   onRowClick,
-  responsiveConfig
 }: TableRowProps<DataType>) => {
-  const handleRowClick = () => {
-    onRowClick(+data["id" as keyof DataType]);
-  };
+  const handleRowClick = () => onRowClick(+data["id" as keyof DataType]);
 
   return (
     <Stack
       spacing={0}
       sx={{
-        flexDirection: responsiveConfig.flexDirection,
+        flexDirection: { xs: "column", sm: "row" },
         justifyContent: "space-between",
         alignItems: "center",
         marginBottom: "10px",
+        cursor: "pointer",
       }}
       onClick={handleRowClick}
     >
       {header.map((item) => {
         return (
           <TableCellContainer
-            key={`${item.property}_${data["id" as keyof DataType]}`}
+            key={`${item.key}_${data["id" as keyof DataType]}`}
           >
             <TableCell type={TableCellType.HEADER}>{item.value}</TableCell>
-            <TableCell>{data[item.key as keyof DataType] as React.ReactNode}</TableCell>
+            <TableCell>
+              {data[item.key as keyof DataType] as React.ReactNode}
+            </TableCell>
           </TableCellContainer>
         );
       })}

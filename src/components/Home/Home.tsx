@@ -1,64 +1,102 @@
-import { MOCK_DATA } from "../../data/characters";
-import { Character } from "../../models/Character";
-import { CustomTable } from "../CustomTable/CustomTable/CustomTable";
-import { Header } from "../../models/Header";
-import { useMemo, useState } from "react";
-import { mapApiDataToTable } from "../../utils/mappers";
-import { Container, TextField } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDebounce } from "@uidotdev/usehooks";
+import { useQuery } from "@tanstack/react-query";
+import { CustomTable } from "../CustomTable/CustomTable/CustomTable";
+import { DataMeta } from "../../models/DataMeta";
+import { mapApiDataToTable } from "../../utils/mappers";
 import { dynamicPaths } from "../../routes";
-import { useNavigate } from "react-router-dom";
-import { CharacterResponse } from "../../models/CharacterResponse";
+import { getArrayOfNumbers } from "../../utils/lib";
+import { fetchCharacterPageData } from "../../utils/requests";
+import SearchBar from "./SearchBar/SearchBar";
+import { Character } from "../../models/Character";
+import Spinner from "../Spinner/Spinner";
+import { useParallelQueries } from "../../hooks/useParallelQueries";
+import { ApiPageResponse } from "../../models/ApiPageResponse";
 
-const header: Header[] = [
-  { key: "image", value: "", property: "image" },
-  { key: "name", value: "Name", property: "name" },
-  { key: "species", value: "Species", property: "species" },
-  { key: "status", value: "Status", property: "status" },
+const SEARCH_PARAM_KEY = "s";
+
+const tableHeader: DataMeta[] = [
+  { key: "image", value: "" },
+  { key: "name", value: "Name" },
+  { key: "species", value: "Species" },
+  { key: "status", value: "Status" },
 ];
-
-const tableData = mapApiDataToTable<CharacterResponse, Character>(MOCK_DATA);
 
 export default function Home() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [pageCounts, setPageCounts] = useState<number[]>([]);
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get(SEARCH_PARAM_KEY) || ""
+  );
   const delayedSearchTerm = useDebounce(searchTerm, 200);
+
+  const {
+    data: fetchedTotalPageCountData,
+    isLoading: isTotalPageCountLoading,
+  } = useQuery({
+    queryKey: ["page", 1],
+    queryFn: () => fetchCharacterPageData(1),
+  });
+
+  useEffect(() => {
+    if (!fetchedTotalPageCountData?.info?.pages) return;
+
+    setPageCounts(() =>
+      getArrayOfNumbers(1, fetchedTotalPageCountData.info.pages)
+    );
+  }, [fetchedTotalPageCountData]);
+
+  const { queries: pageQueries, isAnyQueryLoading: isAnyPageQueryLoading } =
+    useParallelQueries<number, ApiPageResponse | null>(
+      "page",
+      pageCounts,
+      fetchCharacterPageData
+    );
+
+  const tableData = useMemo(() => {
+    return isAnyPageQueryLoading
+      ? []
+      : pageQueries.reduce(
+          (result, query) => [
+            ...result,
+            ...mapApiDataToTable(query?.data?.results),
+          ],
+          [] as Character[]
+        );
+  }, [isAnyPageQueryLoading, pageQueries]);
 
   const handleSearch = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => setSearchTerm(e.target.value);
+  ) => {
+    setSearchTerm(e.target.value);
+    setSearchParams(`${SEARCH_PARAM_KEY}=${e.target.value}`);
+  };
 
   const tableToRender = useMemo(
     () => (
       <CustomTable
-        header={header}
+        header={tableHeader}
         data={tableData}
         nameFilter={delayedSearchTerm}
         onRowClick={(id) => navigate(dynamicPaths.profile(id))}
       />
     ),
-    [delayedSearchTerm, navigate]
+    [delayedSearchTerm, navigate, tableData]
   );
 
   return (
     <>
-      <Container
-        sx={{
-          justifyContent: { xs: "center", sm: "flex-start" },
-          marginBottom: "50px",
-          display: "flex",
-        }}
-      >
-        <TextField
-          value={searchTerm}
-          label="search names"
-          variant="standard"
-          onChange={handleSearch}
-        />
-      </Container>
-      {tableToRender}
+      {isTotalPageCountLoading || isAnyPageQueryLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <SearchBar searchTerm={searchTerm} handleSearch={handleSearch} />
+          {tableToRender}
+        </>
+      )}
     </>
   );
 }
-

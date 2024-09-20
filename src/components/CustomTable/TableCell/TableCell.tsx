@@ -12,7 +12,7 @@ export const TableCell = ({
     <Box
       sx={{
         ...(type === TableCellType.HEADER
-          ? { display: { sm: "none" } }
+          ? { display: { sm: "none", fontWeight: 600 } }
           : { display: { sm: "flex" }, justifyContent: "center" }),
         width: { sm: "100%" },
       }}
