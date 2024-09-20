@@ -18,6 +18,12 @@ export const Pagination = ({
   currentPage,
   setCurrentPage,
 }: PaginationProps) => {
+  if(currentPage > pageCount - 1) {
+    currentPage = pageCount - 1
+  } else if(currentPage < 0) {
+    currentPage = 0;
+  }
+
   const paginate = (direction: PaginationDirections) => {
     if (direction === PaginationDirections.PREVIOUS)
       return setCurrentPage((page) => (page > 0 ? page - 1 : 0));
@@ -34,11 +40,13 @@ export const Pagination = ({
         marginTop: "20px",
         display: "flex",
       }}
+      data-testid="pagination"
     >
       {currentPage > 0 && (
         <IconButton
           aria-label="paginate-previous"
           onClick={() => paginate(PaginationDirections.PREVIOUS)}
+          data-testid="paginate_prev"
         >
           <KeyboardDoubleArrowLeftIcon />
         </IconButton>
@@ -47,6 +55,7 @@ export const Pagination = ({
         <IconButton
           aria-label="paginate-next"
           onClick={() => paginate(PaginationDirections.NEXT)}
+          data-testid="paginate_next"
         >
           <KeyboardDoubleArrowRightIcon />
         </IconButton>
