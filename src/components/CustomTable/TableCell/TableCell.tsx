@@ -12,10 +12,11 @@ export const TableCell = ({
     <Box
       sx={{
         ...(type === TableCellType.HEADER
-          ? { display: { sm: "none", fontWeight: 600 } }
+          ? { display: { sm: "none" }, fontWeight: 600 }
           : { display: { sm: "flex" }, justifyContent: "center" }),
         width: { sm: "100%" },
       }}
+      data-testid="table_cell"
     >
       {children}
     </Box>

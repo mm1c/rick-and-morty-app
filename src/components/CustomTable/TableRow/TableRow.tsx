@@ -28,6 +28,7 @@ export const TableRow = <DataType,>({
         cursor: "pointer",
       }}
       onClick={handleRowClick}
+      data-testid="table_row"
     >
       {header.map((item) => {
         return (

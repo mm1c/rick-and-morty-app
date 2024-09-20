@@ -15,6 +15,7 @@ export const TableHeader = ({ data }: { data: DataMeta[] }) => {
           display: { xs: "none", sm: "flex" },
           fontWeight: 600,
         }}
+        data-testid="header"
       >
         {data.map((item) => (
           <TableCell key={item.key}>{item.value}</TableCell>
