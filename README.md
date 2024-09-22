@@ -1,10 +1,10 @@
 # Rick And Morty App
 
-This sample app uses [Rick and Morty API](https://rickandmortyapi.com/) to offer an easy to use frontend app to present some important data about all the characters and the episodes they appeared in.
+This app uses [Rick and Morty API](https://rickandmortyapi.com/) to offer an easy to use frontend app to present some important data about all the characters and the episodes they appeared in.
 
 ## Installation
 
-Clone the repository: `git clone`
+Clone the repository.
 
 Install the required packages: `npm install`
 
