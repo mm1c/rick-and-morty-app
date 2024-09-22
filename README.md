@@ -10,6 +10,8 @@ Install the required packages: `npm install`
 
 Run it locally: `npm run dev`
 
+Go to `http://localhost:3000/` and check the running app.
+
 ## Tests
 
 To run the tests: `npm run test`
